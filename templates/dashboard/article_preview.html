@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    *{box-sizing:border-box}body{margin:0;padding:20px;color:#394457;font:14px/1.8 Arial,sans-serif;overflow-wrap:anywhere}
+    h1{margin:0 0 8px;color:#202b3f;font-size:25px;line-height:1.3} .excerpt{margin:0 0 22px;color:#778195;font-size:16px}
+    .content h1,.content h2,.content h3,.content h4{color:#202b3f;line-height:1.3;margin:1.5em 0 .6em}
+    .content p{margin:0 0 1em}.content ul,.content ol{padding-left:24px}.content blockquote{margin:1.2em 0;padding:10px 16px;border-left:3px solid #e87932;background:#fff7f1}
+    .content a{color:#d96d2c}.content pre{overflow:auto;padding:14px;border-radius:8px;background:#202b3f;color:#f5f6f8}
+    .content table{display:block;max-width:100%;overflow-x:auto;border-collapse:collapse}.content th,.content td{padding:8px;border:1px solid #e5e8ed;text-align:left}
+  </style>
+</head>
+<body>
+  <h1>{{ title }}</h1>
+  {% if excerpt %}<p class="excerpt">{{ excerpt }}</p>{% endif %}
+  <div class="content">{{ preview_html|safe }}</div>
+</body>
+</html>

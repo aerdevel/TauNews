@@ -1,0 +1,77 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% block title %}Панель управления — TAU News Hub{% endblock %}
+{% block dashboard_content %}
+<div class="dash-top">
+  <div>
+    <span class="eyebrow">КОНТЕНТ-МЕНЕДЖМЕНТ · {{ role_label|upper }}</span>
+    <h1>Панель управления</h1>
+    <p class="muted">{% if can_moderate %}Управляйте всеми публикациями и комментариями.{% else %}Здесь находятся только ваши материалы. Публикацию выполняет редактор.{% endif %}</p>
+  </div>
+  <a class="button button-orange" href="{% url 'news:article_create' %}">＋ Создать новость</a>
+</div>
+<div class="stats-grid">
+  <div class="stat-card"><span>Всего статей</span><strong>{{ total }}</strong><small>{% if can_moderate %}Все публикации{% else %}Ваши материалы{% endif %}</small></div>
+  <div class="stat-card"><span>Опубликовано</span><strong>{{ published }}</strong><small>Видны читателям</small></div>
+  <div class="stat-card"><span>Черновики</span><strong>{{ drafts }}</strong><small>{% if can_moderate %}В том числе на проверке{% else %}Ожидают проверки редактором{% endif %}</small></div>
+  {% if can_moderate %}<div class="stat-card"><span>На модерации</span><strong>{{ pending_comments }}</strong><small>Комментарии</small></div>{% endif %}
+</div>
+<div class="table-panel">
+  <div class="table-heading">
+    <div><h2>Последние публикации</h2><p>{% if can_moderate %}Материалы всех авторов{% else %}Ваши черновики и публикации{% endif %}</p></div>
+    <a href="{% url 'news:article_create' %}">Добавить статью ↗</a>
+  </div>
+  <div class="table-scroll">
+    <table>
+      <thead><tr><th>Заголовок</th>{% if can_moderate %}<th>Автор</th>{% endif %}<th>Категория</th><th>Статус</th><th>Дата</th><th>Действия</th></tr></thead>
+      <tbody>
+      {% for article in articles %}
+        <tr>
+          <td class="table-title">{{ article.title }}</td>
+          {% if can_moderate %}<td>{{ article.author.username }}</td>{% endif %}
+          <td>{{ article.category.name }}</td>
+          <td><span class="status status-{{ article.status }}">{{ article.get_status_display }}</span></td>
+          <td>{{ article.updated_at|date:"d.m.Y" }}</td>
+          <td class="actions">
+            {% if can_moderate or article.status == "draft" %}<a href="{% url 'news:article_edit' article.pk %}">Изменить</a>{% endif %}
+            {% if can_moderate or article.status == "draft" %}<a class="danger-link" href="{% url 'news:article_delete' article.pk %}">Удалить</a>{% endif %}
+            {% if article.status == "published" %}<a href="{{ article.get_absolute_url }}" target="_blank" rel="noopener">Открыть</a>{% endif %}
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="{% if can_moderate %}6{% else %}5{% endif %}" class="empty-cell">Статей пока нет. Создайте первую публикацию.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% if can_moderate %}
+<div class="moderation-note">
+  <div><b>Модерация комментариев</b><p>Новые комментарии проверяются перед публикацией.</p></div>
+  <span class="muted">Ожидают проверки: {{ pending_comments }}</span>
+</div>
+{% if pending_comment_list %}
+<div class="table-panel comment-moderation-panel">
+  <div class="table-heading"><div><h2>Комментарии на проверке</h2><p>Одобренные комментарии появятся на странице статьи</p></div></div>
+  <div class="table-scroll">
+    <table>
+      <thead><tr><th>Комментарий</th><th>Автор</th><th>К статье</th><th>Дата</th><th>Действия</th></tr></thead>
+      <tbody>
+      {% for comment in pending_comment_list %}
+        <tr>
+          <td class="comment-preview">{{ comment.text|truncatechars:110 }}</td>
+          <td>{{ comment.author.username }}</td>
+          <td>{{ comment.article.title|truncatechars:45 }}</td>
+          <td>{{ comment.created_at|date:"d.m.Y H:i" }}</td>
+          <td class="actions">
+            <form method="post" action="{% url 'news:comment_moderate' comment.pk %}">{% csrf_token %}<input type="hidden" name="action" value="approve"><button class="moderation-action" type="submit">Одобрить</button></form>
+            <form method="post" action="{% url 'news:comment_moderate' comment.pk %}">{% csrf_token %}<input type="hidden" name="action" value="delete"><button class="moderation-action danger-link" type="submit">Удалить</button></form>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+{% endif %}
+{% endblock %}

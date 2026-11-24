@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}{{ heading }} — TAU News Hub{% endblock %}
+{% block content %}
+<div class="container page-shell">
+  <div class="page-heading"><span class="eyebrow">TAU NEWS HUB</span><h1>{{ heading }}</h1><p>Самое важное из жизни университетского сообщества.</p></div>
+  <div class="article-grid">{% for article in page_obj %}{% include "news/_article_card.html" %}{% empty %}<div class="empty-state">По вашему запросу ничего не найдено.</div>{% endfor %}</div>
+  {% include "news/_pagination.html" %}
+</div>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="dashboard-wrap">
+  <aside class="dashboard-sidebar">
+    <span class="eyebrow">TAU NEWS HUB</span>
+    <h3>Управление</h3>
+    <a class="dash-nav active" href="{% url 'news:dashboard' %}">▦ Обзор</a>
+    <a class="dash-nav" href="{% url 'news:article_create' %}">＋ Новая статья</a>
+    {% if user.is_superuser %}<a class="dash-nav" href="{% url 'news:user_management' %}">♙ Пользователи и роли</a>{% endif %}
+    {% if can_moderate and user.is_staff %}
+      <a class="dash-nav" href="/admin/news/category/">▤ Категории</a>
+    {% endif %}
+    <div class="sidebar-bottom">
+      <span>Вы вошли как</span><b>{{ user.username }}</b>
+      <span class="sidebar-role">{{ role_label|default:"Редактор" }}</span>
+      <a href="{% url 'news:home' %}">← На сайт</a>
+    </div>
+  </aside>
+  <section class="dashboard-content">{% block dashboard_content %}{% endblock %}</section>
+</div>
+{% endblock %}

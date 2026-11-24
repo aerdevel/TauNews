@@ -1,0 +1,3 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% block title %}Удаление — TAU News Hub{% endblock %}
+{% block dashboard_content %}<div class="confirm-card"><span class="eyebrow">ПОДТВЕРЖДЕНИЕ</span><h1>Удалить статью?</h1><p>Вы собираетесь удалить «{{ article.title }}». Это действие нельзя отменить.</p><form method="post">{% csrf_token %}<a class="button button-outline" href="{% url 'news:dashboard' %}">Отмена</a> <button class="button button-danger">Удалить</button></form></div>{% endblock %}

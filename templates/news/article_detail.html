@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load news_formatting %}
+{% block title %}{{ article.title }} — TAU News Hub{% endblock %}
+{% block content %}
+<div class="container article-layout">
+  <article class="article-main">
+    <div class="breadcrumbs"><a href="{% url 'news:home' %}">Главная</a><span>/</span><a href="{% url 'news:category' article.category.slug %}">{{ article.category.name }}</a></div>
+    <span class="category-tag">{{ article.category.name }}</span>
+    <h1 class="article-title">{{ article.title }}</h1>
+    <p class="article-excerpt">{{ article.excerpt }}</p>
+    <div class="article-byline"><span class="avatar">{{ article.author.username|first|upper }}</span><span><b>{{ article.author.get_full_name|default:article.author.username }}</b><small>{{ article.published_at|date:"d.m.Y · H:i" }}</small></span><span class="byline-views">{{ article.views }} просмотров</span></div>
+    {% if article.image %}<img class="article-cover" src="{{ article.image.url }}" alt="{{ article.title }}">{% endif %}
+    <div class="article-body">{{ article.body|render_article_markdown }}</div>
+    <section class="comments">
+      <h2>Обсуждение <span>{{ comments|length }}</span></h2>
+      {% if user.is_authenticated %}
+      <form method="post" class="comment-form">{% csrf_token %}{{ form.as_p }}<button class="button button-dark">Отправить комментарий</button></form>
+      {% else %}<p class="muted">Чтобы оставить комментарий, <a href="{% url 'accounts:login' %}?next={{ request.path }}">войдите в аккаунт</a>.</p>{% endif %}
+      {% for comment in comments %}<div class="comment"><b>{{ comment.author.username }}</b><small>{{ comment.created_at|date:"d.m.Y H:i" }}</small><p>{{ comment.text|linebreaksbr }}</p></div>{% empty %}<p class="muted">Пока нет комментариев. Будьте первым!</p>{% endfor %}
+    </section>
+  </article>
+  <aside class="article-sidebar"><div class="sidebar-sticky"><span class="eyebrow">ЕЩЁ ПО ТЕМЕ</span><h3>Читайте также</h3>{% for item in related %}<a class="related-item" href="{{ item.get_absolute_url }}">{% if item.image %}<img src="{{ item.image.url }}" alt="">{% else %}<div class="related-placeholder">T</div>{% endif %}<span><b>{{ item.title }}</b><small>{{ item.published_at|date:"d.m.Y" }}</small></span></a>{% empty %}<p class="muted">Похожих публикаций пока нет.</p>{% endfor %}</div></aside>
+</div>
+{% endblock %}

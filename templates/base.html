@@ -1,0 +1,50 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="TAU News Hub — новости и события университета">
+  <title>{% block title %}TAU News Hub{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="{% url 'news:home' %}"><span class="brand-mark">T</span><span>TAU <b>News Hub</b></span></a>
+    <nav class="main-nav">
+      <a href="{% url 'news:home' %}">Главная</a>
+      {% for category in nav_categories|slice:":4" %}<a href="{% url 'news:category' category.slug %}">{{ category.name }}</a>{% endfor %}
+    </nav>
+    <form class="search-form" action="{% url 'news:search' %}" method="get">
+      <input name="q" value="{{ request.GET.q }}" placeholder="Поиск новостей..." aria-label="Поиск">
+      <button aria-label="Найти">⌕</button>
+    </form>
+    <div class="header-account">
+      {% if user.is_authenticated %}
+        {% if can_access_dashboard %}<a class="admin-link" href="{% url 'news:dashboard' %}">Панель</a>{% endif %}
+        <span class="user-chip">{{ user.username }}</span>
+        <form method="post" action="{% url 'accounts:logout' %}">{% csrf_token %}<button class="text-button">Выйти</button></form>
+      {% else %}
+        <a class="login-link" href="{% url 'accounts:login' %}">Войти</a>
+      {% endif %}
+    </div>
+    <button class="menu-toggle" aria-label="Открыть меню" aria-expanded="false">☰</button>
+  </div>
+  <div class="mobile-nav" hidden>
+    <a href="{% url 'news:home' %}">Главная</a>
+    {% for category in nav_categories %}<a href="{% url 'news:category' category.slug %}">{{ category.name }}</a>{% endfor %}
+    {% if can_access_dashboard %}<a href="{% url 'news:dashboard' %}">Панель редактора</a>{% endif %}
+  </div>
+</header>
+<main>
+  {% if messages %}<div class="container messages">{% for message in messages %}<div class="message">{{ message }}</div>{% endfor %}</div>{% endif %}
+  {% block content %}{% endblock %}
+</main>
+<footer class="site-footer"><div class="container footer-inner"><a class="brand brand-light" href="{% url 'news:home' %}"><span class="brand-mark">T</span><span>TAU <b>News Hub</b></span></a><span>Новости университетского сообщества</span><span>© {% now "Y" %} TAU News Hub</span></div></footer>
+<script src="{% static 'js/main.js' %}"></script>
+</body>
+</html>

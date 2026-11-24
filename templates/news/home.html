@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Главная — TAU News Hub{% endblock %}
+{% block content %}
+<div class="container">
+  {% if featured %}
+  <section class="hero">
+    <div class="hero-copy">
+      <span class="eyebrow">ГЛАВНОЕ СОБЫТИЕ</span>
+      <span class="category-tag tag-light">{{ featured.category.name }}</span>
+      <h1>{{ featured.title }}</h1>
+      <p>{{ featured.excerpt }}</p>
+      <a class="button button-orange" href="{{ featured.get_absolute_url }}">Читать статью <span>↗</span></a>
+      <div class="hero-meta">{{ featured.published_at|date:"d F Y" }} <span>·</span> {{ featured.views }} просмотров</div>
+    </div>
+    <a class="hero-image" href="{{ featured.get_absolute_url }}">
+      {% if featured.image %}<img src="{{ featured.image.url }}" alt="{{ featured.title }}">{% else %}<div class="image-placeholder hero-placeholder"><span>TAU</span><small>NEWS HUB</small></div>{% endif %}
+    </a>
+  </section>
+  {% else %}
+  <section class="empty-hero"><span class="eyebrow">TAU NEWS HUB</span><h1>Истории нашего университета</h1><p>Новости, события и достижения университетского сообщества.</p></section>
+  {% endif %}
+  <section class="section-block">
+    <div class="section-heading"><div><span class="eyebrow">БУДЬ В КУРСЕ</span><h2>Последние новости</h2></div><span class="section-note">Свежие публикации университета</span></div>
+    <div class="article-grid">{% for article in page_obj %}{% include "news/_article_card.html" %}{% empty %}<div class="empty-state">Пока нет опубликованных новостей. Добавьте первую статью через панель администратора.</div>{% endfor %}</div>
+    {% include "news/_pagination.html" %}
+  </section>
+</div>
+{% endblock %}

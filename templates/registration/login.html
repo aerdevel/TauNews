@@ -1,0 +1,3 @@
+{% extends "base.html" %}
+{% block title %}Вход — TAU News Hub{% endblock %}
+{% block content %}<div class="auth-wrap"><form method="post" class="auth-card">{% csrf_token %}<span class="eyebrow">С РАДОСТЬЮ ВИДИМ СНОВА</span><h1>Войти</h1><p class="muted">Войдите, чтобы участвовать в жизни сообщества.</p>{% if form.errors %}<p class="form-error">Неверный логин или пароль.</p>{% endif %}{{ form.as_p }}<input type="hidden" name="next" value="{{ next }}"><button class="button button-orange button-wide">Войти</button><p class="auth-bottom">Нет аккаунта? <a href="{% url 'news:register' %}">Зарегистрироваться</a></p></form></div>{% endblock %}
